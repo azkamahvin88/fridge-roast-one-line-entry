@@ -20,11 +20,14 @@ const ENTRY =
   "My smart fridge's touchscreen froze, so now I own a $3,000 whiteboard that keeps the milk cold.";
 
 // Gate guard: the sealed scorer only accepts UTF-8 text of 1 to 200
-// characters, not only white space. Fail loudly here rather than writing
-// an invalid entry.
-if (ENTRY.length < 1 || ENTRY.length > 200 || !ENTRY.trim()) {
+// characters, not only white space. Count code points (like the scorer's
+// character count), not UTF-16 code units, so the guard stays exact even
+// for a line with non-ASCII characters. Fail loudly here rather than
+// writing an invalid entry.
+const charCount = [...ENTRY].length;
+if (charCount < 1 || charCount > 200 || !ENTRY.trim()) {
   throw new Error(
-    `ENTRY must be 1-200 non-blank characters, got ${ENTRY.length}: ${JSON.stringify(ENTRY)}`,
+    `ENTRY must be 1-200 non-blank characters, got ${charCount}: ${JSON.stringify(ENTRY)}`,
   );
 }
 
